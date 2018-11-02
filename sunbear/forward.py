@@ -55,9 +55,8 @@ def forward(source, phi):
 
     # interpolate the values
     interp = lambda s: griddata(y, s.flatten(), x, "linear").reshape(s.shape)
-    source_t = interp(source)
-    det_hess_t = interp(det_hess_s)
-    target = source_t / det_hess_t
+    target_s = source / det_hess_s
+    target = interp(target_s)
 
     # fill nan values with zeros
     target[np.isnan(target)] = 0.0
