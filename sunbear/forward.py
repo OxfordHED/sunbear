@@ -3,6 +3,8 @@ import numpy as np
 from scipy.interpolate import griddata
 from sunbear.calculus.diff import grad, det_hess
 
+__all__ = ["forward"]
+
 def forward(source, phi):
     """
     Obtain the target density distribution given the source distribution and
