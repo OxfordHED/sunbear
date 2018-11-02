@@ -54,7 +54,7 @@ def forward(source, phi):
     y = np.array([grad(u , axis=i) for i in range(ndim)]).reshape((ndim,-1)).T
 
     # interpolate the values
-    interp = lambda s: griddata(x, s.flatten(), y, "linear").reshape(s.shape)
+    interp = lambda s: griddata(y, s.flatten(), x, "linear").reshape(s.shape)
     source_t = interp(source)
     det_hess_t = interp(det_hess_s)
     target = source_t / det_hess_t
