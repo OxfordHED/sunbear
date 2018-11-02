@@ -33,7 +33,7 @@ def forward(source, phi):
     """
     # convert to np.ndarray
     source = np.asarray(source)
-    phi = np.asarray(phi):
+    phi = np.asarray(phi)
     # check the shapes of inputs
     if source.shape != phi.shape:
         raise ValueError("The source and phi must have the same shape.")
@@ -42,7 +42,7 @@ def forward(source, phi):
     shape = phi.shape
     ndim = len(shape)
     x_coords = _get_default_expanded_coordinate(np.array(shape)+2, ndim)
-    u0 = 0.5 + reduce(lambda x,y: x+y*y, x_coords, initializer=0.0)
+    u0 = 0.5 * reduce(lambda x,y: x+y*y, x_coords, 0.0)
     phi_pad = np.pad(phi, [(1,1)]*ndim, mode="constant")
     u = u0 + phi_pad
 
@@ -54,8 +54,10 @@ def forward(source, phi):
     y = np.array([grad(u , axis=i) for i in range(ndim)]).reshape((ndim,-1)).T
 
     # interpolate the values
-    det_hess_t = griddata(x, det_hess_s.flatten(), y).reshape(det_hess_s.shape)
-    return source / det_hess_t
+    interp = lambda s: griddata(x, s.flatten(), y).reshape(s.shape)
+    source_t = interp(source)
+    det_hess_t = interp(det_hess_s)
+    return source_t / det_hess_t
 
 def _get_default_expanded_coordinate(shape, ndim):
     x_coords = []
