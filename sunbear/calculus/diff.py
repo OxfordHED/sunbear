@@ -81,7 +81,7 @@ def det_hess(u):
             hess_unarranged[j,i] = grad2_val
 
     # rearrange hessian to have shape: outshape + [ndim, ndim]
-    perm_idx = range(2,ndim+2) + range(2)
+    perm_idx = list(range(2,ndim+2)) + list(range(2))
     hess = np.transpose(hess_unarranged, perm_idx)
 
     # calculate and return the determinant
