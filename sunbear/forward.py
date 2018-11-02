@@ -57,7 +57,11 @@ def forward(source, phi):
     interp = lambda s: griddata(x, s.flatten(), y, "linear").reshape(s.shape)
     source_t = interp(source)
     det_hess_t = interp(det_hess_s)
-    return source_t / det_hess_t
+    target = source_t / det_hess_t
+
+    # fill nan values with zeros
+    target[np.isnan(target)] = 0.0
+    return target
 
 def _get_default_expanded_coordinate(shape, ndim):
     x_coords = []
