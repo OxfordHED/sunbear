@@ -153,7 +153,8 @@ def _get_default_expanded_coordinate(shape, ndim):
         x_coords.append(np.arange(shape[i])[tuple(idx)])
     return x_coords
 
-def _get_idx(ndim, dim, s):
-    idx = [slice(None, None, None)] * ndim
+def _get_idx(ndim, dim, s, defidx=None):
+    defidx = slice(None, None, None) if defidx is None else defidx
+    idx = [defidx] * ndim
     idx[dim] = s
     return tuple(idx)
