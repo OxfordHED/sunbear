@@ -113,20 +113,37 @@ def _get_full_potential(phi, starts_from=0):
     ndim = len(shape)
     x_coords = _get_default_expanded_coordinate(np.array(shape)+2, ndim)
     u0 = 0.5 * reduce(lambda x,y: x+(y+starts_from)**2, x_coords, 0.0)
-
-    # pad by conserving the edge gradients
-    def pad_conserve_grads(vec, pad_width, iaxis, kwargs):
-        grad0 = vec[pad_width[0]+1] - vec[pad_width[0]]
-        grad1 = vec[-pad_width[1]-1] - vec[-pad_width[1]-2]
-        pad0 = np.arange(-pad_width[0],0) * grad0 + vec[pad_width[0]]
-        pad1 = np.arange(1,pad_width[1]+1) * grad1 + vec[-pad_width[1]-1]
-        vec[:pad_width[0]] = pad0
-        vec[-pad_width[1]:] = pad1
-        return vec
-
-    phi_pad = np.pad(phi, [(1,1)]*ndim, mode=pad_conserve_grads)
+    phi_pad = _pad_conserve_grads(phi)
     u = u0 + phi_pad
     return u0, u, phi_pad
+
+def _pad_conserve_grads(phi):
+    # pad by conserving the edge gradients
+    ndim = np.ndim(phi)
+    pw = [1, 1]
+    pp = np.pad(phi, [tuple(pw)]*ndim, mode="constant")
+    for dim in range(ndim):
+        # get the indices first
+        idx_pad0_l = _get_idx(ndim, dim, slice(pw[0], pw[0]+1, None))
+        idx_pad0_r = _get_idx(ndim, dim, slice(pw[0]+1, pw[0]+2, None))
+        idx_pad0 = _get_idx(ndim, dim, slice(pw[0], pw[0]+1, None))
+        idx_pad0_fill = _get_idx(ndim, dim, slice(None, pw[0], None))
+        idx_pad1_l = _get_idx(ndim, dim, slice(-pw[1]-2, -pw[1]-1, None))
+        idx_pad1_r = _get_idx(ndim, dim, slice(-pw[1]-1, -pw[1], None))
+        idx_pad1 = _get_idx(ndim, dim, slice(-pw[1]-1, -pw[1], None))
+        idx_pad1_fill = _get_idx(ndim, dim, slice(-pw[1], None, None))
+
+        # now get the padded values
+        grad0 = pp[idx_pad0_r] - pp[idx_pad0_l] # (n0, ..., ndim=1, ..., nd1)
+        grad1 = pp[idx_pad1_r] - pp[idx_pad1_l]
+        pad_arange0 = np.arange(-pw[0],0) # (1, ..., ndim=pw[i], ..., 1)
+        pad_arange1 = np.arange(1,pw[0]+1)
+        pad0 = pad_arange0 * grad0 + pp[idx_pad0] # (n0,...,ndim=pw[i],...,nd1)
+        pad1 = pad_arange1 * grad1 + pp[idx_pad1]
+        pp[idx_pad0_fill] = pad0
+        pp[idx_pad1_fill] = pad1
+
+    return pp
 
 def _get_default_expanded_coordinate(shape, ndim):
     x_coords = []
@@ -135,3 +152,8 @@ def _get_default_expanded_coordinate(shape, ndim):
         idx[i] = slice(None, None, None)
         x_coords.append(np.arange(shape[i])[tuple(idx)])
     return x_coords
+
+def _get_idx(ndim, dim, s):
+    idx = [slice(None, None, None)] * ndim
+    idx[dim] = s
+    return tuple(idx)
