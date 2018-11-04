@@ -58,12 +58,12 @@ def forward(source, phi):
     target[np.isnan(target)] = 0.0
     return target
 
-def _get_full_potential(phi):
+def _get_full_potential(phi, starts_from=0):
     shape = np.asarray(phi).shape
     ndim = len(shape)
     x_coords = _get_default_expanded_coordinate(np.array(shape)+2, ndim)
-    u0 = 0.5 * reduce(lambda x,y: x+y*y, x_coords, 0.0)
     phi_pad = np.pad(phi, [(1,1)]*ndim, mode="constant")
+    u0 = 0.5 * reduce(lambda x,y: x+(y+starts_from)**2, x_coords, 0.0)
     u = u0 + phi_pad
     return u0, u, phi_pad
 
