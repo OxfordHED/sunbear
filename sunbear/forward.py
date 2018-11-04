@@ -39,12 +39,8 @@ def forward(source, phi):
         raise ValueError("The source and phi must have the same shape.")
 
     # calculate the total potential so that $y = \nabla u(x)$
-    shape = phi.shape
-    ndim = len(shape)
-    x_coords = _get_default_expanded_coordinate(np.array(shape)+2, ndim)
-    u0 = 0.5 * reduce(lambda x,y: x+y*y, x_coords, 0.0)
-    phi_pad = np.pad(phi, [(1,1)]*ndim, mode="constant")
-    u = u0 + phi_pad
+    u0, u = _get_full_potential(phi)
+    ndim = np.ndim(phi)
 
     # calculate the determinant of the hessian
     det_hess_s = det_hess(u)
@@ -61,6 +57,15 @@ def forward(source, phi):
     # fill nan values with zeros
     target[np.isnan(target)] = 0.0
     return target
+
+def _get_full_potential(phi):
+    shape = np.asarray(phi).shape
+    ndim = len(shape)
+    x_coords = _get_default_expanded_coordinate(np.array(shape)+2, ndim)
+    u0 = 0.5 * reduce(lambda x,y: x+y*y, x_coords, 0.0)
+    phi_pad = np.pad(phi, [(1,1)]*ndim, mode="constant")
+    u = u0 + phi_pad
+    return u0, u
 
 def _get_default_expanded_coordinate(shape, ndim):
     x_coords = []
