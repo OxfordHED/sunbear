@@ -45,29 +45,30 @@ class Momentum(GradOptInterface):
                 self.last_niter_update = self.niter
 
             # step update
-            if (f > f0) and (step > minstep):
+            if (f > f0) and (step > self.minstep):
                 step = step / 2.0
             else:
                 f0 = f
                 x0 = x
-                dx0 = dx * alpha + dx0 * (1-self.alpha) # momentum update
+                dx0 = dx * self.alpha + dx0 * (1-self.alpha) # momentum update
 
             # update by stepping to the new value
             x = x0 - step * dx0
 
             self.niter += 1
-            if step < minstep:
-                step = minstep
+            if step < self.minstep:
+                step = self.minstep
 
             # refresh the step size (i.e. it checks if it can be larger)
             if self.niter % self.refresh_interval == 0 or self.niter == 1:
-                step = _step_search(func_obj, x0, f0, dx0, step)
-                if step < minstep:
-                    step = minstep
+                step = _step_search(func, x0, f0, dx0, step)
+                if step < self.minstep:
+                    step = self.minstep
 
             # check the stopping conditions
             if self._is_stop():
                 break
+        return x
 
     def _is_stop(self):
         # stopping conditions
@@ -81,7 +82,7 @@ class Momentum(GradOptInterface):
             return True
         return False
 
-def _step_search(self, func, x0, f0, dx0, step):
+def _step_search(func, x0, f0, dx0, step):
     # search the optimal step size using the golden search algorithm
     golden = 1.618033988749895 # golden ratio
     golden_inv = 1.0 / golden
