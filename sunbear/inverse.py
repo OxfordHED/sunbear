@@ -44,12 +44,12 @@ def inverse(source, target, gradopt_obj=None):
         raise ValueError("The source and target must have the same shape.")
 
     # initialize phi0
+    ndim = np.ndim(source)
     phi0 = np.zeros_like(source)
     u0, _, phi0_pad = _get_full_potential(phi0)
     x = np.array([grad(u0, axis=i) for i in range(ndim)])
-    ndim = np.ndim(source)
-    pts = tuple([x[_get_idx(ndim, i, slice(None,None,None), 0)] \
-        for i in range(ndim)])
+    pts = tuple([xx[_get_idx(ndim, i, slice(None,None,None), 0)] \
+        for i,xx in enumerate(x)])
 
     # functions to get the loss function and the gradient
     def grad_phi_pad(phi_pad):
@@ -60,10 +60,11 @@ def inverse(source, target, gradopt_obj=None):
 
         # get the displacement in (n x D) format
         y = np.array([grad(u , axis=i) for i in range(ndim)])
+        ypts = np.asarray([xx[_get_idx(ndim, i, slice(None,None,None), 0)] \
+            for i,xx in enumerate(y)]).T
 
         # get the target density on the source plane
-        interp = lambda s: interpn(pts, s.flatten(), y, "linear").\
-            reshape(s.shape)
+        interp = lambda s: interpn(pts, s, ypts, "linear").reshape(s.shape)
         target_s = interp(target)
 
         # calculate the dudt based on Sulman (2011)
