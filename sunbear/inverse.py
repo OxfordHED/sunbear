@@ -87,4 +87,4 @@ def inverse(source, target, gradopt_obj=None):
     opt = Momentum() if gradopt_obj is None else gradopt_obj
     phi_pad = opt.solve(grad_phi_pad, phi0_pad)
     idx_interior = tuple([slice(1,-1,None)]*ndim)
-    return (phi_pad - u0)[idx_interior]
+    return phi_pad[idx_interior]
