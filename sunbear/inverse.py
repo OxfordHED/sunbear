@@ -4,6 +4,8 @@ from sunbear.calculus.diff import grad, det_hess
 from sunbear.forward import _get_full_potential, _get_idx
 from sunbear.gradopt import Momentum
 
+__all__ = ["inverse"]
+
 def inverse(source, target, gradopt_obj=None):
     """
     Get the normalized deflection potential given the source and target density
