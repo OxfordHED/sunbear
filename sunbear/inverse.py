@@ -58,7 +58,7 @@ def inverse(source, target, gradopt_obj=None):
         # calculate the determinant of the hessian
         det_hess_s = det_hess(u)
 
-        # get the displacement in (n x D) format
+        # get the new position in (n x D) format
         y = np.array([grad(u , axis=i) for i in range(ndim)])
         ypts = np.asarray([xx[_get_idx(ndim, i, slice(None,None,None), 0)] \
             for i,xx in enumerate(y)]).T
