@@ -74,7 +74,7 @@ class Momentum(GradOptInterface):
         # stopping conditions
         if self.niter > self.max_niter:
             return True
-        if self.fmin / self.finit < self.rel_tol:
+        if self.fmin < self.rel_tol * self.finit:
             return True
         if time.time() - self.tinit > self.max_time:
             return True
