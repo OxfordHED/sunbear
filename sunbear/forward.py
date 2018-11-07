@@ -1,7 +1,7 @@
 from functools import reduce
 import numpy as np
 from scipy.interpolate import griddata, RegularGridInterpolator
-from sunbear.calculus.diff import grad, det_hess
+from sunbear.math.diff import grad, det_hess
 
 __all__ = ["forward", "forward_pos"]
 

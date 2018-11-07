@@ -94,8 +94,8 @@ def _test_inverse_nd(n, ndim, source_obj, phi_obj,
     #     plt.plot(target)
     #     plt.plot(target_r)
     #     plt.subplot(nr,nc,3)
-    #     plt.plot(sb.calculus.diff.grad2(target, axes=(0,0)))
-    #     plt.plot(sb.calculus.diff.grad2(target_r, axes=(0,0)))
+    #     plt.plot(sb.math.diff.grad2(target, axes=(0,0)))
+    #     plt.plot(sb.math.diff.grad2(target_r, axes=(0,0)))
     #     plt.show()
 
     # set the default tolerance

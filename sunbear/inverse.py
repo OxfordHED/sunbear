@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import interpn
-from sunbear.calculus.diff import grad, det_hess
+from sunbear.math.diff import grad, det_hess
 from sunbear.forward import _get_full_potential, _get_idx
 from sunbear.gradopt import Momentum
 

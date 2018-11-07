@@ -1,5 +1,5 @@
 import numpy as np
-from sunbear.calculus._utils import get_idx, midx, lidx, hidx
+from sunbear.math._utils import get_idx, midx, lidx, hidx
 
 def grad(u, axis):
     """

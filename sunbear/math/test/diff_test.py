@@ -1,5 +1,5 @@
 import numpy as np
-from sunbear.calculus.diff import grad, grad2, det_hess
+from sunbear.math.diff import grad, grad2, det_hess
 from functools import reduce
 import pytest
 
