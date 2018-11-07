@@ -11,7 +11,7 @@ setup(
     author_email='firman.kasim@gmail.com',
     license='MIT',
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.5",
     install_requires=[
         "numpy>=1.14.3",
         "scipy>=1.1.0",
