@@ -78,7 +78,7 @@ class Momentum(GradOptInterface):
             # check the stopping conditions
             if self._is_stop():
                 break
-        return x
+        return xmin
 
     def _is_stop(self):
         def disp(s):
