@@ -55,7 +55,12 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
         for i,xx in enumerate(x)])
 
     # functions to get the loss function and the gradient
+    idx_interior = tuple([slice(3,-3,None)]*ndim)
+    idx_interior2 = tuple([slice(2,-2,None)]*ndim)
+    target_shape = target.shape
     interpolator = RegularGridInterpolator(pts, target, method=interp)
+    log_source = np.log(np.abs(source))
+
     def grad_phi_pad(phi_pad):
         u = u0 + phi_pad
 
@@ -64,17 +69,15 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
 
         # get the new position in (n x D) format
         y = np.array([grad(u , axis=i) for i in range(ndim)]) # (D x n x n)
-        ypts = np.transpose(y, list(range(1,ndim+1))+[0]).reshape(-1, ndim)
+        ypts = y.reshape(ndim, -1).T
 
         # get the target density on the source plane
         target_s = interpolator(ypts).reshape(target_shape)
 
         # calculate the dudt based on Sulman (2011)
-        dudt_interior = np.log(np.abs(source / (target_s * det_hess_s)))
+        dudt_interior = log_source - np.log(np.abs(target_s * det_hess_s))
         dudt = np.zeros_like(u)
         # we don't want the gradient on the edge changed
-        idx_interior = tuple([slice(3,-3,None)]*ndim)
-        idx_interior2 = tuple([slice(2,-2,None)]*ndim)
         dudt[idx_interior] = dudt_interior[idx_interior2]
 
         # handle nan and inf values
@@ -82,7 +85,7 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
         dudt[np.isinf(dudt)] = 0.0
 
         # error and the gradient
-        f = np.mean(dudt.flatten()**2)
+        f = np.mean(dudt*dudt)
         return f, dudt
 
     # set up the solver object and solve it
