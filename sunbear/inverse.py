@@ -66,8 +66,7 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
         ypts = np.transpose(y, list(range(1,ndim+1))+[0]).reshape(-1, ndim)
 
         # get the target density on the source plane
-        interpf = lambda s: interpn(pts, s, ypts, interp).reshape(s.shape)
-        target_s = interpf(target)
+        target_s = interpn(pts, target, ypts, interp).reshape(target.shape)
 
         # calculate the dudt based on Sulman (2011)
         dudt_interior = np.log(np.abs(source / (target_s * det_hess_s)))
