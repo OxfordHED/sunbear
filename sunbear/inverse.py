@@ -59,9 +59,8 @@ def inverse(source, target, gradopt_obj=None):
         det_hess_s = det_hess(u)
 
         # get the new position in (n x D) format
-        y = np.array([grad(u , axis=i) for i in range(ndim)])
-        ypts = np.asarray([xx[_get_idx(ndim, i, slice(None,None,None), 0)] \
-            for i,xx in enumerate(y)]).T
+        y = np.array([grad(u , axis=i) for i in range(ndim)]) # (D x n x n)
+        ypts = np.transpose(y, (1,2,0)).reshape(-1, ndim)
 
         # get the target density on the source plane
         interp = lambda s: interpn(pts, s, ypts, "linear").reshape(s.shape)
