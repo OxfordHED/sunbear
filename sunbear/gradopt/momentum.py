@@ -71,8 +71,7 @@ class Momentum(GradOptInterface):
             if self.verbose:
                 if self.niter == 1:
                     print("niter  fmin")
-                if (self.niter in [1,2,3,4]) or \
-                        (self.niter % 10 == 0):
+                if (self.niter == 1) or (self.niter % 100 == 0):
                     print("%5d %.3e" % (self.niter, self.fmin))
 
             # check the stopping conditions
