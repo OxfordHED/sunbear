@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import interpn
+from scipy.interpolate import RegularGridInterpolator
 from sunbear.math.diff import grad, det_hess
 from sunbear.forward import _get_full_potential, _get_idx
 from sunbear.gradopt import Momentum
@@ -55,6 +55,7 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
         for i,xx in enumerate(x)])
 
     # functions to get the loss function and the gradient
+    interpolator = RegularGridInterpolator(pts, target, method=interp)
     def grad_phi_pad(phi_pad):
         u = u0 + phi_pad
 
@@ -66,7 +67,7 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
         ypts = np.transpose(y, list(range(1,ndim+1))+[0]).reshape(-1, ndim)
 
         # get the target density on the source plane
-        target_s = interpn(pts, target, ypts, interp).reshape(target.shape)
+        target_s = interpolator(ypts).reshape(target_shape)
 
         # calculate the dudt based on Sulman (2011)
         dudt_interior = np.log(np.abs(source / (target_s * det_hess_s)))
