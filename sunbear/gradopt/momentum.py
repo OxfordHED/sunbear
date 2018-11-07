@@ -7,7 +7,7 @@ __all__ = ["Momentum"]
 class Momentum(GradOptInterface):
     def __init__(self,
             refresh_interval = 100,
-            rel_tol = 1e-3,
+            rel_tol = 1e-9,
             minstep = 1e-3,
             alpha = 0.1,
             # stopping conditions options
