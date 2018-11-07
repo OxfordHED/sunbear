@@ -6,7 +6,7 @@ from sunbear.gradopt import Momentum
 
 __all__ = ["inverse"]
 
-def inverse(source, target, gradopt_obj=None):
+def inverse(source, target, gradopt_obj=None, interp="linear"):
     """
     Get the normalized deflection potential given the source and target density
     distribution.
@@ -29,6 +29,9 @@ def inverse(source, target, gradopt_obj=None):
     * `gradopt_obj` : sunbear.gradopt.GradOptInterface obj, optional
         The solver object to solve the gradient descent problem. The default
         is sunbear.gradopt.Momentum.
+    * `interp` : str
+        Interpolation type to be put on scipy.interpolate.interpn. Supported
+        are "linear", "nearest", "splinef2d" (only for 2D data).
 
     Returns
     -------
@@ -63,8 +66,8 @@ def inverse(source, target, gradopt_obj=None):
         ypts = np.transpose(y, (1,2,0)).reshape(-1, ndim)
 
         # get the target density on the source plane
-        interp = lambda s: interpn(pts, s, ypts, "linear").reshape(s.shape)
-        target_s = interp(target)
+        interpf = lambda s: interpn(pts, s, ypts, interp).reshape(s.shape)
+        target_s = interpf(target)
 
         # calculate the dudt based on Sulman (2011)
         dudt_interior = np.log(np.abs(source / (target_s * det_hess_s)))
