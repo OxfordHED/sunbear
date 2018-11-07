@@ -68,6 +68,10 @@ def test_inverse_1d(source_obj, phi_obj):
     n, ndim = 100, 1
     _test_inverse_nd(n, ndim, source_obj, phi_obj)
 
+def test_inverse_2d(source_obj, phi_obj):
+    n, ndim = 100, 2
+    _test_inverse_nd(n, ndim, source_obj, phi_obj)
+
 def _test_inverse_nd(n, ndim, source_obj, phi_obj,
         abstarget=None, absphi=None,
         reltarget=None, relphi=None):
