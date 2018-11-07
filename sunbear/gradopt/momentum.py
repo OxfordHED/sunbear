@@ -14,6 +14,7 @@ class Momentum(GradOptInterface):
             max_niter = 50000,
             max_time = 60*5, # in s
             max_niter_no_update = 5000,
+            verbose=1,
             ):
         self.refresh_interval = refresh_interval
         self.rel_tol = rel_tol
@@ -22,6 +23,7 @@ class Momentum(GradOptInterface):
         self.max_niter = max_niter
         self.max_time = max_time
         self.max_niter_no_update = max_niter_no_update
+        self.verbose = verbose
 
     def solve(self, func, x0):
         self.tinit = time.time()
@@ -65,21 +67,39 @@ class Momentum(GradOptInterface):
                 if step < self.minstep:
                     step = self.minstep
 
+            # print the result
+            if self.verbose:
+                if self.niter == 1:
+                    print("niter  fmin")
+                if (self.niter in [1,2,3,4]) or \
+                        (self.niter % 10 == 0):
+                    print("%5d %.3e" % (self.niter, self.fmin))
+
             # check the stopping conditions
             if self._is_stop():
                 break
         return x
 
     def _is_stop(self):
+        def disp(s):
+            if self.verbose:
+                print("Stopped due to %s" % s)
+
         # stopping conditions
         if self.niter > self.max_niter:
+            disp("niter > max_niter: (%d < %d)" % (self.niter, self.max_niter))
             return True
         if self.fmin < self.rel_tol * self.finit:
+            disp("fmin < rel_tol*finit: (%e < %e)" % \
+                (self.fmin, self.rel_tol*self.finit))
             return True
         if time.time() - self.tinit > self.max_time:
+            disp("time spent > %fs" % self.max_time)
             return True
         if self.niter - self.last_niter_update > self.max_niter_no_update:
+            disp("niter with no update > %d" % self.max_niter_no_update)
             return True
+
         return False
 
 def _step_search(func, x0, f0, dx0, step):
