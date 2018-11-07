@@ -63,7 +63,7 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
 
         # get the new position in (n x D) format
         y = np.array([grad(u , axis=i) for i in range(ndim)]) # (D x n x n)
-        ypts = np.transpose(y, (1,2,0)).reshape(-1, ndim)
+        ypts = np.transpose(y, list(range(1,ndim+1))+[0]).reshape(-1, ndim)
 
         # get the target density on the source plane
         interpf = lambda s: interpn(pts, s, ypts, interp).reshape(s.shape)
