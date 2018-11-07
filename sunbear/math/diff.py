@@ -1,5 +1,6 @@
 import numpy as np
 from sunbear.math._utils import get_idx, midx, lidx, hidx
+from sunbear.math.det import det
 
 def grad(u, axis):
     """
@@ -80,9 +81,4 @@ def det_hess(u):
             hess_unarranged[i,j] = grad2_val
             hess_unarranged[j,i] = grad2_val
 
-    # rearrange hessian to have shape: outshape + [ndim, ndim]
-    perm_idx = list(range(2,ndim+2)) + list(range(2))
-    hess = np.transpose(hess_unarranged, perm_idx)
-
-    # calculate and return the determinant
-    return np.linalg.det(hess)
+    return det(hess_unarranged)
