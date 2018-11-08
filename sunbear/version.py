@@ -33,11 +33,25 @@ def git_version():
 
     return GIT_REVISION
 
+def _get_git_version():
+    cwd = os.getcwd()
+
+    # go to the main directory
+    fdir = os.path.dirname(os.path.abspath(__file__))
+    maindir = os.path.join(fdir, "..")
+    os.chdir(maindir)
+
+    # get git version
+    res = git_version()
+
+    # restore the cwd
+    os.chdir(cwd)
+    return res
+
 def get_version():
     if ISRELEASED:
         return VERSION
 
     # unreleased version
-    if os.path.exists('.git'):
-        GIT_REVISION = git_version()
+    GIT_REVISION = _get_git_version()
     return VERSION + ".dev0+" + GIT_REVISION[:7]
