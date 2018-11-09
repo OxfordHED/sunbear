@@ -45,9 +45,6 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
     # check the shapes
     if source.shape != target.shape:
         raise ValueError("The source and target must have the same shape.")
-    # normalize the mass
-    source /= np.sum(source)
-    target /= np.sum(target)
 
     # initialize phi0
     ndim = np.ndim(source)
