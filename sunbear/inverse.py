@@ -6,7 +6,7 @@ from sunbear.gradopt import Momentum
 
 __all__ = ["inverse"]
 
-def inverse(source, target, gradopt_obj=None, interp="linear"):
+def inverse(source, target, phi0=None, gradopt_obj=None, interp="linear"):
     """
     Get the normalized deflection potential given the source and target density
     distribution.
@@ -26,6 +26,9 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
     * `target` : numpy.ndarray
         The target density distribution in n-dimensional array. `source` and
         `target` must have the same shape.
+    * `phi0` : numpy.ndarray
+        The initial value of the deflection potential to start from. The default
+        values are all zeros.
     * `gradopt_obj` : sunbear.gradopt.GradOptInterface obj, optional
         The solver object to solve the gradient descent problem. The default
         is sunbear.gradopt.Momentum.
@@ -47,8 +50,9 @@ def inverse(source, target, gradopt_obj=None, interp="linear"):
         raise ValueError("The source and target must have the same shape.")
 
     # initialize phi0
+    if phi0 is None:
+        phi0 = np.zeros_like(source)
     ndim = np.ndim(source)
-    phi0 = np.zeros_like(source)
     u0, _, phi0_pad = _get_full_potential(phi0, -1)
     x = np.array([grad(u0, axis=i) for i in range(ndim)])
     pts = tuple([xx[_get_idx(ndim, i, slice(None,None,None), 0)] \
