@@ -39,44 +39,47 @@ class Momentum(GradOptInterface):
         self.fmin = np.inf
         xmin = 0
         self.last_niter_update = 0
-        while 1:
-            f, dx = func(x)
-            if f < self.fmin:
-                self.fmin = f
-                xmin = x
-                self.last_niter_update = self.niter
+        try:
+            while 1:
+                f, dx = func(x)
+                if f < self.fmin:
+                    self.fmin = f
+                    xmin = x
+                    self.last_niter_update = self.niter
 
-            # step update
-            if (f > f0) and (step > self.minstep):
-                step = step / 2.0
-            else:
-                f0 = f
-                x0 = x
-                dx0 = dx * self.alpha + dx0 * (1-self.alpha) # momentum update
+                # step update
+                if (f > f0) and (step > self.minstep):
+                    step = step / 2.0
+                else:
+                    f0 = f
+                    x0 = x
+                    dx0 = dx * self.alpha + dx0 * (1-self.alpha) # momentum update
 
-            # update by stepping to the new value
-            x = x0 - step * dx0
+                # update by stepping to the new value
+                x = x0 - step * dx0
 
-            self.niter += 1
-            if step < self.minstep:
-                step = self.minstep
-
-            # refresh the step size (i.e. it checks if it can be larger)
-            if self.niter % self.refresh_interval == 0 or self.niter == 1:
-                step = _step_search(func, x0, f0, dx0, step)
+                self.niter += 1
                 if step < self.minstep:
                     step = self.minstep
 
-            # print the result
-            if self.verbose:
-                if self.niter == 1:
-                    print("niter  fmin")
-                if (self.niter == 1) or (self.niter % 100 == 0):
-                    print("%5d %.3e" % (self.niter, self.fmin))
+                # refresh the step size (i.e. it checks if it can be larger)
+                if self.niter % self.refresh_interval == 0 or self.niter == 1:
+                    step = _step_search(func, x0, f0, dx0, step)
+                    if step < self.minstep:
+                        step = self.minstep
 
-            # check the stopping conditions
-            if self._is_stop():
-                break
+                # print the result
+                if self.verbose:
+                    if self.niter == 1:
+                        print("niter  fmin")
+                    if (self.niter == 1) or (self.niter % 100 == 0):
+                        print("%5d %.3e" % (self.niter, self.fmin))
+
+                # check the stopping conditions
+                if self._is_stop():
+                    break
+        except KeyboardInterrupt:
+            pass
         return xmin
 
     def _is_stop(self):
