@@ -5,7 +5,7 @@ from sunbear.math.diff import grad, det_hess
 
 __all__ = ["forward", "forward_pos"]
 
-def forward(source, phi):
+def forward(source, phi, extrapval=0.0):
     """
     Obtain the target density distribution given the source distribution and
     the mapping potential, phi.
@@ -25,6 +25,8 @@ def forward(source, phi):
     * `phi` : numpy.ndarray
         The mapping potential given above. It must have the same shape as
         `source`.
+    * `extrapval` : float
+        The extrapolation value (default: 0.0).
 
     Returns
     -------
@@ -54,8 +56,8 @@ def forward(source, phi):
     target_s = source / det_hess_s
     target = interp(target_s)
 
-    # fill nan values with zeros
-    target[np.isnan(target)] = 0.0
+    # fill nan values with the extrapolation value
+    target[np.isnan(target)] = extrapval
     return target
 
 def forward_pos(pos, phi):
