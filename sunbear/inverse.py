@@ -6,7 +6,8 @@ from sunbear.gradopt import Momentum
 
 __all__ = ["inverse"]
 
-def inverse(source, target, phi0=None, gradopt_obj=None, interp="linear"):
+def inverse(source, target, phi0=None, gradopt_obj=None, interp="linear",
+            return_f=False):
     """
     Get the normalized deflection potential given the source and target density
     distribution.
@@ -35,6 +36,9 @@ def inverse(source, target, phi0=None, gradopt_obj=None, interp="linear"):
     * `interp` : str
         Interpolation type to be put on scipy.interpolate.interpn. Supported
         are "linear", "nearest", "splinef2d" (only for 2D data).
+    * `return_f`: bool
+        If True, it will return the final loss function as the last argument.
+        Otherwise, it just returns the mapping potential.
 
     Returns
     -------
@@ -93,5 +97,10 @@ def inverse(source, target, phi0=None, gradopt_obj=None, interp="linear"):
     # set up the solver object and solve it
     opt = Momentum() if gradopt_obj is None else gradopt_obj
     phi_pad = opt.solve(grad_phi_pad, phi0_pad)
-    idx_interior = tuple([slice(1,-1,None)]*ndim)
-    return phi_pad[idx_interior]
+    idx_interior3 = tuple([slice(1,-1,None)]*ndim)
+
+    if not return_f:
+        return phi_pad[idx_interior3]
+    else:
+        f, _ = grad_phi_pad(phi_pad)
+        return phi_pad[idx_interior3], f
