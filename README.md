@@ -1,5 +1,5 @@
 # Sun Bear
-Fast Monge-Ampere solver for n-dimensional arrays
+Fast Monge-Ampere solver for `n`-dimensional arrays
 
 ## Requirements
 
